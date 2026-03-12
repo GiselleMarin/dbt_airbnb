@@ -35,18 +35,23 @@ Données utilisées :
 ```
 dbt_airbnb/
 ├── models/
-│ └── curation/
-│ ├── curation_hosts.sql
-│ ├── curation_listings.sql
-│ ├── curation_listings_inc.sql ← modèle incrémental
-│ ├── curation_reviews.sql
-│ └── curation_tourists_per_year.sql
+│   └── curation/
+│       ├── curation_hosts.sql
+│       ├── curation_listings.sql
+│       ├── curation_listings_inc.sql   ← modèle incrémental
+│       ├── curation_reviews.sql
+│       └── curation_tourists_per_year.sql
+├── analyses/
+│   ├── super_hotes_par_quartier.sql
+│   ├── relation_super_hote_prix.sql
+│   ├── Distribution_prix_par_quartier.sql
+│   └── tourists_reviews.sql
 ├── snapshots/
-│ ├── listings_snapshot.sql ← SCD strategy: check all cols
-│ └── hosts_snapshot.sql ← SCD strategy: check all cols
+│   ├── listings_snapshot.sql           ← SCD strategy: check all cols
+│   └── hosts_snapshot.sql              ← SCD strategy: check all cols
 ├── seeds/
-│ └── tourists_per_year.csv ← fréquentation 2012-2023
-├── sources.yaml ← définition sources + tests + unit tests
+│   └── tourists_per_year.csv           ← fréquentation 2012-2023
+├── sources.yaml
 ├── packages.yml
 └── dbt_project.yml
 ```
