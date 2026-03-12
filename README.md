@@ -32,7 +32,7 @@ Données utilisées :
 
 
 ## Structure du projet
-
+```
 dbt_airbnb/
 ├── models/
 │ └── curation/
@@ -49,6 +49,7 @@ dbt_airbnb/
 ├── sources.yaml ← définition sources + tests + unit tests
 ├── packages.yml
 └── dbt_project.yml
+```
 
 
 
