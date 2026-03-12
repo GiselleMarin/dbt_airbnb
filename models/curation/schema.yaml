@@ -1,0 +1,69 @@
+version: 2
+
+models:
+  - name: curation_hosts
+    description: Table hotes nettoyée et formatée
+    columns:
+      - name: host_id
+        description: Identifiant unique de l'hôte
+        tests:
+          - unique
+          - not_null
+      - name: host_name
+        description: Nom de l'hôte
+        tests:
+          - not_null
+      - name: host_since
+        description: Date d'inscription de l'hôte
+        tests:
+          - not_null
+      - name: host_location
+        description: Ville et pays de l'hôte
+        tests:
+          - not_null
+      - name: host_city
+        description: Ville de l'hôte
+        tests:
+          - not_null
+      - name: host_country
+        description: Pays de l'hôte
+        tests:
+          - not_null
+      - name: is_superhost
+        description: Indicateur si l'hôte a le statut superhost 
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [TRUE, FALSE]
+      - name: host_neighbourhood
+        description: Quartier de l'hôte
+        tests:
+          - not_null
+      - name: is_identity_verified
+        description: Indicateur si l'identité de l'hôte a été vérifiée  
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [TRUE, FALSE]
+
+  - name: curation_listings
+    description: Table des listings, netoyéé et formattée
+    columns:
+      - name: price
+        description: prix par nuitée
+        tests:
+          - not_null
+
+  - name: curation_reviews
+    description: Table indiquant par listing et par jour le nombre de commentaires reçus
+    columns:
+      - name: listing_id
+        description: Identifiant du listing, doit référencer la colonne listing_id dans curation_listings.sql
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('curation_listings')
+                field: listing_id

@@ -1,0 +1,146 @@
+version: 2
+
+sources:
+  - name: raw_airbnb_data
+    database: airbnb
+    schema: raw
+    tables:
+      - name: hosts
+        columns:
+          - name: host_id
+            description: Identifiant unique de l'hôte
+            tests:
+        #      - unique
+               - not_null
+
+          - name: host_name
+            tests:
+              - not_null
+
+          - name: host_since
+            tests:
+              - not_null
+
+
+          - name: host_is_superhost
+            tests:
+              - accepted_values:
+                  arguments:
+                    values: ['t', 'f']
+      
+      
+          - name: host_identity_verified
+            tests:
+              - not_null
+              - accepted_values:
+                  arguments:
+                    values: ['t', 'f'] 
+
+      - name: listings
+        columns:
+          - name: id
+            tests:
+              - not_null
+              - unique
+
+          - name: listing_url
+            tests:
+              - not_null
+              - unique
+
+          - name: name
+            tests:
+              - not_null
+
+          - name: host_id
+            tests:
+              - not_null
+
+
+          - name: property_type
+            tests:
+              - not_null
+
+          - name: accommodates
+            tests:
+              - not_null
+
+       #   - name: price    ca ne marche pas car des valeurs null ????
+        #    tests:
+         #     - not_null
+          #    - dbt_utils.accepted_range:
+           #       arguments:
+            #        min_value: 0
+             #       inclusive: false
+          
+          - name: minimum_nights
+            tests:
+              - not_null
+              - dbt_utils.accepted_range:
+                  arguments:
+                    min_value: 1
+
+      - name: reviews
+        columns:
+          - name: listing_id
+            tests:
+              - not_null
+
+unit_tests:
+  - name: test_is_host_data_transformation_correct
+    description: "Vérifie que host_name, host_city, host_country et response_rate sont créés correctement"
+    model: curation_hosts
+    given:
+      - input: ref('hosts_snapshot')
+        rows:
+          - {host_name: 'Jacko', host_location: "ville,pays", host_response_rate: '32%', DBT_VALID_TO: null, host_is_superhost: 't', host_neighbourhood: 'quartier'} 
+          - {host_name: 'Xi', host_location: "ville,pays", host_response_rate: '32.03%', DBT_VALID_TO: null, host_is_superhost: 't', host_neighbourhood: 'quartier'}
+          - {host_name: 'J', host_location: "pays,ville", host_response_rate: '32.53%', DBT_VALID_TO: null, host_is_superhost: 't', host_neighbourhood: 'quartier'}
+    expect:
+      rows:
+        - {host_name: 'Jacko', host_city: 'ville', host_country: 'pays', response_rate: 32}
+        - {host_name: 'Xi', host_city: 'ville', host_country: 'pays', response_rate: 32}
+        - {host_name: 'Anonyme', host_city: 'pays', host_country: 'ville', response_rate: 33}
+  
+  - name: test_is_curation_listings_transformation_correct
+    description: "Vérifie que la colonne price est bien transformée"
+    model: curation_listings
+    given:
+      - input: ref("listings_snapshot")
+        rows:
+          - {price: '52.23$', DBT_VALID_TO: null}
+          - {price: '$56.23', DBT_VALID_TO: null}
+    expect:
+        rows:
+          - {price: 52.23}
+          - {price: 56.23}
+          
+  - name: test_is_curation_reviews_aggregation_correct
+    description: "Vérifie que le compte des commentaires est bien implémenté"
+    model: curation_reviews
+    given:
+      - input: source("raw_airbnb_data", "reviews")
+        rows:
+          - {listing_id: 'listing_1', date: '2012-01-01'}
+          - {listing_id: 'listing_1', date: '2012-01-01'}
+          - {listing_id: 'listing_1', date: '2014-02-01'}
+          - {listing_id: 'listing_2', date: '2013-01-01'}
+      - input: ref("curation_listings")
+        rows:
+          - {listing_id: 'listing_1'}
+    expect:
+      rows:
+        - {listing_id: 'listing_1', review_date: '2012-01-01', number_reviews: 2}
+        - {listing_id: 'listing_1', review_date: '2014-02-01', number_reviews: 1}
+
+  - name: test_is_curation_tourists_per_year_correct
+    description: "Vérifie que l'année est bien transformée en une date par le modèle"
+    model: curation_tourists_per_year
+    given:
+      - input: ref("tourists_per_year")
+        rows:
+        - {year: 2012}
+    expect:
+      rows:
+        - {year: '2012-12-31'}
+
