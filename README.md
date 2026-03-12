@@ -24,10 +24,10 @@ Données utilisées :
 
 ## Stack technique
 
-| Outil | Usage |
-|-------|-------|
-| **dbt Cloud** | Transformation & orchestration |
-| **Snowflake** | Data warehouse (base : `airbnb`) |
+|                 | Usage |
+|-----------------|-------|
+| **dbt Cloud**   | Transformation & orchestration |
+| **Snowflake**   | Data warehouse (base : `airbnb`) |
 | **SQL / Jinja** | Modélisation des données |
 
 
