@@ -1,5 +1,5 @@
 
-# dbt Airbnb Amsterdam
+# DBT Airbnb Amsterdam
 
 Projet de transformation de données **Airbnb Amsterdam** utilisant **dbt** et **Snowflake**.
 
